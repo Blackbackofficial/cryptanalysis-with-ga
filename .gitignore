@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 .idea/
 .DS_Store
-./data/decoded_text.txt
-./data/encoded_text.txt
-./frequency_analysis/distributions.obj
+data/decoded_text.txt
+data/encoded_text.txt
+frequency_analysis/distributions.obj
