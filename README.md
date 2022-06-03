@@ -1,2 +1,3 @@
-# key_gen
-crack file and key-gen from exe file and 
+# Cryptanalysis with genetic algorithms (GA)
+
+#### Natural language text cracking, a method for optimizing the search for the key of permutation ciphers using genetic algorithms(GA) is presented.
