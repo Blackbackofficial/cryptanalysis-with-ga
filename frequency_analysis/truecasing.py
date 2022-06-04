@@ -5,10 +5,6 @@ import nltk
 import re
 from nltk import sent_tokenize
 
-"""
-This file contains the functions to truecase a sentence.
-"""
-
 
 def get_score(prev_token, possible_token, next_token, word_casing_look, uniq_dist, backward_bi_dist, forward_bi_dist,
               trigram_dist) -> float:
