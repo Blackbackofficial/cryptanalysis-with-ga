@@ -5,7 +5,7 @@ import string
 import numpy as np
 
 
-def decrypt(encoded_message):
+def decrypt(encoded_message) -> str:
     # for replacing non-alpha characters
     regex = re.compile('[^a-zA-Z]')
 
@@ -18,30 +18,30 @@ def decrypt(encoded_message):
     pi = np.zeros(26)
 
     # a function to update the Markov matrix
-    def update_transition(ch1, ch2):
-        i = ord(ch1) - 97
-        j = ord(ch2) - 97
+    def update_transition(let0, let1) -> np.array:
+        i = ord(let0) - 97
+        j = ord(let1) - 97
         M[i, j] += 1
 
     # a function to update the initial state distribution
-    def update_pi(ch):
+    def update_pi(ch) -> np.array:
         i = ord(ch) - 97
         pi[i] += 1
 
     # get the log-probability of a word / token
-    def get_word_prob(word):
+    def get_word_prob(word) -> np.array:
         i = ord(word[0]) - 97
         logp = np.log(pi[i])
 
         for ch in word[1:]:
             j = ord(ch) - 97
             logp += np.log(M[i, j])  # update prob
-            i = j  # update j
+            i = j
 
         return logp
 
     # get the probability of a sequence of words
-    def get_sequence_prob(words):
+    def get_sequence_prob(words) -> int:
 
         # if input is a string, split into an array of tokens
         if type(words) == str:
@@ -53,7 +53,7 @@ def decrypt(encoded_message):
         return logp
 
     # a function to decode a message
-    def decode_message(msg, word_map):
+    def decode_message(msg, word_map) -> str:
         decoded_msg = []
         for ch in msg:
             decoded_ch = ch  # could just be a space
@@ -63,7 +63,7 @@ def decrypt(encoded_message):
 
         return ''.join(decoded_msg)
 
-    def evolve_offspring(dna_pool, n_children):
+    def evolve_offspring(dna_pool, n_children) -> list:
         # make n_children per offspring
         offspring = []
 
@@ -100,13 +100,13 @@ def decrypt(encoded_message):
                 # update the model
 
                 # first letter
-                ch0 = token[0]
-                update_pi(ch0)
+                let0 = token[0]
+                update_pi(let0)
 
                 # other letters
-                for ch1 in token[1:]:
-                    update_transition(ch0, ch1)
-                    ch0 = ch1
+                for let1 in token[1:]:
+                    update_transition(let0, let1)
+                    let0 = let1
 
     print("Normalizing calculated probabilities...")
     pi /= pi.sum()

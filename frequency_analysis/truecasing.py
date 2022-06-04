@@ -11,7 +11,7 @@ This file contains the functions to truecase a sentence.
 
 
 def get_score(prev_token, possible_token, next_token, word_casing_look, uniq_dist, backward_bi_dist, forward_bi_dist,
-              trigram_dist):
+              trigram_dist) -> float:
     pseudo_count = 5.0
 
     # Get Unigram Score
@@ -61,7 +61,7 @@ def get_score(prev_token, possible_token, next_token, word_casing_look, uniq_dis
 
 
 def get_true_case(tokens, vocabulary_token_option, word_casing_look, uniq_dist, backward_bi_dist, forward_bi_dist,
-                  trigram_dist):
+                  trigram_dist) -> list:
     """
     Returns the true case for the passed tokens.
     @param tokens: Tokens in a single sentence
@@ -111,7 +111,7 @@ def get_true_case(tokens, vocabulary_token_option, word_casing_look, uniq_dist, 
     return tokens_true_case
 
 
-def true_casing_by_stats(input_text):
+def true_casing_by_stats(input_text) -> str:
     true_case_text = ''
     f = open('./frequency_analysis/distributions.obj', 'rb')
     uniq_dist = pickle.load(f)
