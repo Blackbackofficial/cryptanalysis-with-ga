@@ -10,7 +10,6 @@ from frequency_analysis.truecasing import true_casing_by_stats
 
 
 class MenuDisplay:
-
     def __init__(self, menu):
 
         # set menu parameter as class property
@@ -20,9 +19,9 @@ class MenuDisplay:
         self.stdscr = None
 
         # run curses application
-        curses.wrapper(self.mainloop)
+        curses.wrapper(self.main_loop)
 
-    def mainloop(self, stdscr):
+    def main_loop(self, stdscr):
         # turn off cursor blinking
         curses.curs_set(0)
 
@@ -87,7 +86,7 @@ class MenuDisplay:
 
                     message = "DECODED MESSAGE: " + message
                     self.stdscr.clear()
-                    maximum = self.maxlines()
+                    maximum = self.max_lines()
                     for i in range(maximum):
 
                         try:
@@ -95,10 +94,10 @@ class MenuDisplay:
                             self.stdscr.addstr(message[i])
                             self.stdscr.attron(curses.color_pair(5))
                             self.stdscr.refresh()
-                        except:
+                        except Exception:
                             pass
 
-                    time.sleep(10)
+                    time.sleep(4)
                     self.stdscr.getch()
 
                 else:
@@ -137,7 +136,7 @@ class MenuDisplay:
 
                     self.stdscr.clear()
 
-                    maximum = self.maxlines()
+                    maximum = self.max_lines()
 
                     encoded_message = "ENCODED MESSAGE: " + encoded_message + key
                     for i in range(maximum):
@@ -147,7 +146,7 @@ class MenuDisplay:
                             self.stdscr.addstr(encoded_message[i])
                             self.stdscr.attroff(curses.color_pair(2))
 
-                        except:
+                        except Exception:
                             pass
 
                         self.stdscr.refresh()
@@ -157,7 +156,7 @@ class MenuDisplay:
 
             self.print_menu(current_row)
 
-    def maxlines(self):
+    def max_lines(self):
 
         n = 0
         try:
@@ -165,7 +164,7 @@ class MenuDisplay:
                 self.stdscr.addstr(str(i))
                 n += 1
 
-        except:
+        except Exception:
             pass
 
         self.stdscr.erase()

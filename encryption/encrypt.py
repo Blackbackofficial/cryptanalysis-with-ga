@@ -3,9 +3,9 @@ import re
 import string
 
 
-def encrypt(message):
+def encrypt(message) -> (str, dict):
     # a function to encode a message
-    def encode_message(msg, true_mapping):
+    def encode_message(msg, true_mapping) -> str:
         msg = msg.lower()
 
         regex = re.compile('[^a-zA-Z]')
@@ -24,7 +24,7 @@ def encrypt(message):
         return ''.join(coded_msg)
 
     # create substitution cipher
-    def substitution_cipher():
+    def substitution_cipher() -> dict:
 
         letters1 = list(string.ascii_lowercase)
         letters2 = list(string.ascii_lowercase)
