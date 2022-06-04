@@ -10,58 +10,58 @@ This file contains the functions to truecase a sentence.
 """
 
 
-def getScore(prevToken, possibleToken, nextToken, wordCasingLookup, uniDist, backwardBiDist, forwardBiDist,
-             trigramDist):
-    pseudoCount = 5.0
+def get_score(prev_token, possible_token, next_token, word_casing_look, uniq_dist, backward_bi_dist, forward_bi_dist,
+              trigram_dist):
+    pseudo_count = 5.0
 
     # Get Unigram Score
-    nominator = uniDist[possibleToken] + pseudoCount
+    nominator = uniq_dist[possible_token] + pseudo_count
     denominator = 0
-    for alternativeToken in wordCasingLookup[possibleToken.lower()]:
-        denominator += uniDist[alternativeToken] + pseudoCount
+    for alter_token in word_casing_look[possible_token.lower()]:
+        denominator += uniq_dist[alter_token] + pseudo_count
 
-    unigramScore = nominator / denominator
+    unigram_score = nominator / denominator
 
     # Get Backward Score
-    bigramBackwardScore = 1
-    if prevToken != None:
-        nominator = backwardBiDist[prevToken + '_' + possibleToken] + pseudoCount
+    bigram_backward_score = 1
+    if prev_token is not None:
+        nominator = backward_bi_dist[prev_token + '_' + possible_token] + pseudo_count
         denominator = 0
-        for alternativeToken in wordCasingLookup[possibleToken.lower()]:
-            denominator += backwardBiDist[prevToken + '_' + alternativeToken] + pseudoCount
+        for alter_token in word_casing_look[possible_token.lower()]:
+            denominator += backward_bi_dist[prev_token + '_' + alter_token] + pseudo_count
 
-        bigramBackwardScore = nominator / denominator
+        bigram_backward_score = nominator / denominator
 
     # Get Forward Score
-    bigramForwardScore = 1
-    if nextToken != None:
-        nextToken = nextToken.lower()  # Ensure it is lower case
-        nominator = forwardBiDist[possibleToken + "_" + nextToken] + pseudoCount
+    bigram_forward_score = 1
+    if next_token is not None:
+        next_token = next_token.lower()
+        nominator = forward_bi_dist[possible_token + "_" + next_token] + pseudo_count
         denominator = 0
-        for alternativeToken in wordCasingLookup[possibleToken.lower()]:
-            denominator += forwardBiDist[alternativeToken + "_" + nextToken] + pseudoCount
+        for alter_token in word_casing_look[possible_token.lower()]:
+            denominator += forward_bi_dist[alter_token + "_" + next_token] + pseudo_count
 
-        bigramForwardScore = nominator / denominator
+        bigram_forward_score = nominator / denominator
 
     # Get Trigram Score
-    trigramScore = 1
-    if prevToken != None and nextToken != None:
-        nextToken = nextToken.lower()  # Ensure it is lower case
-        nominator = trigramDist[prevToken + "_" + possibleToken + "_" + nextToken] + pseudoCount
+    trigram_score = 1
+    if prev_token is not None and next_token is not None:
+        next_token = next_token.lower()
+        nominator = trigram_dist[prev_token + "_" + possible_token + "_" + next_token] + pseudo_count
         denominator = 0
-        for alternativeToken in wordCasingLookup[possibleToken.lower()]:
-            denominator += trigramDist[prevToken + "_" + alternativeToken + "_" + nextToken] + pseudoCount
+        for alter_token in word_casing_look[possible_token.lower()]:
+            denominator += trigram_dist[prev_token + "_" + alter_token + "_" + next_token] + pseudo_count
 
-        trigramScore = nominator / denominator
+        trigram_score = nominator / denominator
 
-    result = math.log(unigramScore) + math.log(bigramBackwardScore) + math.log(bigramForwardScore) + math.log(
-        trigramScore)
+    result = math.log(unigram_score) + math.log(bigram_backward_score) + math.log(bigram_forward_score) + \
+             math.log(trigram_score)
 
     return result
 
 
-def getTrueCase(tokens, outOfVocabularyTokenOption, wordCasingLookup, uniDist, backwardBiDist, forwardBiDist,
-                trigramDist):
+def get_true_case(tokens, vocabulary_token_option, word_casing_look, uniq_dist, backward_bi_dist, forward_bi_dist,
+                  trigram_dist):
     """
     Returns the true case for the passed tokens.
     @param tokens: Tokens in a single sentence
@@ -70,61 +70,62 @@ def getTrueCase(tokens, outOfVocabularyTokenOption, wordCasingLookup, uniDist, b
         lower: Returns OOV tokens in lower case
         as-is: Returns OOV tokens as is
     """
-    tokensTrueCase = []
+    tokens_true_case = []
     for tokenIdx in range(len(tokens)):
         token = tokens[tokenIdx]
         if token in string.punctuation or token.isdigit():
-            tokensTrueCase.append(token)
+            tokens_true_case.append(token)
         else:
-            if token in wordCasingLookup:
-                if len(wordCasingLookup[token]) == 1:
-                    tokensTrueCase.append(list(wordCasingLookup[token])[0])
+            if token in word_casing_look:
+                if len(word_casing_look[token]) == 1:
+                    tokens_true_case.append(list(word_casing_look[token])[0])
                 else:
-                    prevToken = tokensTrueCase[tokenIdx - 1] if tokenIdx > 0 else None
-                    nextToken = tokens[tokenIdx + 1] if tokenIdx < len(tokens) - 1 else None
+                    prev_token = tokens_true_case[tokenIdx - 1] if tokenIdx > 0 else None
+                    next_token = tokens[tokenIdx + 1] if tokenIdx < len(tokens) - 1 else None
 
                     bestToken = None
                     highestScore = float("-inf")
 
-                    for possibleToken in wordCasingLookup[token]:
-                        score = getScore(prevToken, possibleToken, nextToken, wordCasingLookup, uniDist, backwardBiDist,
-                                         forwardBiDist, trigramDist)
+                    for possible_token in word_casing_look[token]:
+                        score = get_score(prev_token, possible_token, next_token, word_casing_look, uniq_dist,
+                                          backward_bi_dist,
+                                          forward_bi_dist, trigram_dist)
 
                         if score > highestScore:
-                            bestToken = possibleToken
+                            bestToken = possible_token
                             highestScore = score
 
-                    tokensTrueCase.append(bestToken)
+                    tokens_true_case.append(bestToken)
 
                 if tokenIdx == 0:
-                    tokensTrueCase[0] = tokensTrueCase[0].title()
+                    tokens_true_case[0] = tokens_true_case[0].title()
 
             else:  # Token out of vocabulary
-                if outOfVocabularyTokenOption == 'title':
-                    tokensTrueCase.append(token.title())
-                elif outOfVocabularyTokenOption == 'lower':
-                    tokensTrueCase.append(token.lower())
+                if vocabulary_token_option == 'title':
+                    tokens_true_case.append(token.title())
+                elif vocabulary_token_option == 'lower':
+                    tokens_true_case.append(token.lower())
                 else:
-                    tokensTrueCase.append(token)
+                    tokens_true_case.append(token)
 
-    return tokensTrueCase
+    return tokens_true_case
 
 
 def true_casing_by_stats(input_text):
     true_case_text = ''
     f = open('./frequency_analysis/distributions.obj', 'rb')
-    uniDist = pickle.load(f)
-    backwardBiDist = pickle.load(f)
-    forwardBiDist = pickle.load(f)
-    trigramDist = pickle.load(f)
-    wordCasingLookup = pickle.load(f)
+    uniq_dist = pickle.load(f)
+    backward_bi_dist = pickle.load(f)
+    forward_bi_dist = pickle.load(f)
+    trigram_dist = pickle.load(f)
+    word_casing_look = pickle.load(f)
     f.close()
 
     sentences = sent_tokenize(input_text, language='english')
     for s in sentences:
         tokens = [token.lower() for token in nltk.word_tokenize(s)]
-        tokensTrueCase = getTrueCase(tokens, 'lower', wordCasingLookup, uniDist, backwardBiDist, forwardBiDist,
-                                     trigramDist)
-        sTrueCase = re.sub(" (?=[\.,'!?:;])", "", ' '.join(tokensTrueCase))
-        true_case_text = true_case_text + sTrueCase + ' '
+        tokens_true_case = get_true_case(tokens, 'lower', word_casing_look, uniq_dist, backward_bi_dist,
+                                         forward_bi_dist, trigram_dist)
+        str_true_case = re.sub(" (?=[.,'!?:;])", "", ' '.join(tokens_true_case))
+        true_case_text = true_case_text + str_true_case + ' '
     return true_case_text.strip()
